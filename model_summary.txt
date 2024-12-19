@@ -1,0 +1,32 @@
+
+Call:
+glm(formula = Churn ~ ., family = binomial, data = train_data)
+
+Coefficients:
+                                      Estimate Std. Error z value Pr(>|z|)    
+(Intercept)                          -1.732393   0.453734  -3.818 0.000134 ***
+GenderMale                           -0.011929   0.157680  -0.076 0.939694    
+Age                                   0.009916   0.004828   2.054 0.039995 *  
+ContractOne Year                     -0.268003   0.175980  -1.523 0.127779    
+ContractTwo Year                     -0.494327   0.314216  -1.573 0.115671    
+MonthlyCharges                        0.003102   0.002723   1.139 0.254705    
+Tenure                                0.005623   0.003849   1.461 0.144053    
+InternetServiceFiber optic           -0.312656   0.180765  -1.730 0.083697 .  
+InternetServiceNo                     0.141367   0.215938   0.655 0.512685    
+PhoneServiceYes                       0.151114   0.267106   0.566 0.571567    
+MultipleLinesNo phone service         0.397419   0.212210   1.873 0.061101 .  
+MultipleLinesYes                      0.263904   0.177313   1.488 0.136658    
+PaymentMethodCredit card (automatic) -0.163132   0.222950  -0.732 0.464354    
+PaymentMethodElectronic check        -0.161445   0.217806  -0.741 0.458550    
+PaymentMethodMailed check             0.046171   0.224016   0.206 0.836709    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 979.79  on 800  degrees of freedom
+Residual deviance: 956.38  on 786  degrees of freedom
+AIC: 986.38
+
+Number of Fisher Scoring iterations: 4
+

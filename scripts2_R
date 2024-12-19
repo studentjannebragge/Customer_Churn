@@ -1,0 +1,78 @@
+# Unified R Script for Customer Churn Analysis
+
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(caret)
+library(pROC)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Step 1: Load the dataset
+data_path <- "Customer_Churn_Dataset.csv" # Replace with your dataset path
+churn_data <- read.csv(data_path)
+
+# Step 2: Data Preprocessing
+# Remove unnecessary columns (CustomerID)
+churn_data <- churn_data %>% select(-CustomerID)
+
+# Convert categorical variables to factors
+churn_data$Churn <- as.factor(churn_data$Churn)
+churn_data$Contract <- as.factor(churn_data$Contract)
+churn_data$InternetService <- as.factor(churn_data$InternetService)
+churn_data$PhoneService <- as.factor(churn_data$PhoneService)
+churn_data$MultipleLines <- as.factor(churn_data$MultipleLines)
+churn_data$PaymentMethod <- as.factor(churn_data$PaymentMethod)
+
+# Step 3: Split data into training and testing sets
+train_index <- createDataPartition(churn_data$Churn, p = 0.8, list = FALSE)
+train_data <- churn_data[train_index, ]
+test_data <- churn_data[-train_index, ]
+
+# Step 4: Build a logistic regression model
+churn_model <- glm(Churn ~ ., data = train_data, family = binomial)
+
+# Step 5: Make predictions on the test data
+predictions <- predict(churn_model, newdata = test_data, type = "response")
+predicted_class <- ifelse(predictions > 0.5, "Yes", "No")
+
+# Step 6: Evaluate model performance
+conf_matrix <- confusionMatrix(factor(predicted_class), test_data$Churn)
+roc_curve <- roc(test_data$Churn, predictions)
+
+# Step 7: Visualization
+# Churn distribution plot
+churn_plot <- ggplot(churn_data, aes(x = Churn)) +
+  geom_bar(fill = "steelblue") +
+  ggtitle("Churn Distribution") +
+  theme_minimal()
+ggsave("churn_distribution.png", plot = churn_plot)
+
+# ROC Curve plot
+roc_plot <- ggplot() +
+  geom_line(aes(x = roc_curve$specificities, y = roc_curve$sensitivities), color = "blue") +
+  labs(title = "ROC Curve", x = "1 - Specificity", y = "Sensitivity") +
+  theme_minimal()
+ggsave("roc_curve.png", plot = roc_plot)
+
+# Step 8: Save Results
+# Save confusion matrix to a file
+write.table(conf_matrix$table, file = "confusion_matrix.txt", sep = "\t", row.names = TRUE, col.names = TRUE)
+
+# Save model summary to a file
+model_summary <- summary(churn_model)
+summary_file <- "model_summary.txt"
+writeLines(capture.output(model_summary), con = summary_file)
+
+# Save processed dataset
+write.csv(churn_data, "processed_churn_data.csv", row.names = FALSE)
+
+# Output message
+cat("Analysis complete! Files saved:",
+    "- churn_distribution.png",
+    "- roc_curve.png",
+    "- confusion_matrix.txt",
+    "- model_summary.txt",
+    "- processed_churn_data.csv",
+    sep = "\n")
